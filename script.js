@@ -1,109 +1,149 @@
-// ===== KONFIGURATSIYA =====
-const CONFIG = {
-    TELEGRAM_BOT_TOKEN: '8055090268:AAHtu9cy9lnZw_GFZqo8mc860Bj9G3H7vOU',
-    TELEGRAM_CHAT_ID: '8136720315',
-    API_URL: 'https://api.telegram.org/bot'
-};
+// ============ DOM ELEMENTLARI ============
+const loading = document.querySelector('.loading');
+const navLinks = document.querySelector('.nav-links');
+const menuBtn = document.getElementById('menuBtn');
+const cartBtn = document.getElementById('cartBtn');
+const cartBadge = document.getElementById('cartBadge');
+const cartSidebar = document.getElementById('cartSidebar');
+const closeCartBtn = document.getElementById('closeCart');
+const cartBody = document.getElementById('cartBody');
+const cartTotalPrice = document.getElementById('cartTotal');
+const checkoutBtn = document.getElementById('checkoutBtn');
+const productsGrid = document.getElementById('productsGrid');
+const filterButtons = document.querySelectorAll('.filter-btn');
+const orderModal = document.getElementById('orderModal');
+const closeOrderBtn = document.getElementById('closeOrderModal');
+const orderForm = document.getElementById('orderForm');
+const successModal = document.getElementById('successModal');
+const continueBtn = document.getElementById('continueBtn');
+const cancelModal = document.getElementById('cancelModal');
+const closeCancelBtn = document.getElementById('closeCancelModal');
+const cancelForm = document.getElementById('cancelForm');
+const overlay = document.querySelector('.overlay');
+const adminBtn = document.getElementById('adminBtn');
+const telegramModal = document.getElementById('telegramModal');
+const closeTelegramBtn = document.getElementById('closeTelegramModal');
+const adminModal = document.getElementById('adminModal');
+const closeAdminBtn = document.getElementById('closeAdminModal');
+const scrollTopBtn = document.getElementById('scrollTop');
+const ordersList = document.getElementById('ordersList');
+const saveTelegramBtn = document.getElementById('saveTelegramBtn');
+const testTelegramBtn = document.getElementById('testTelegramBtn');
+const clearOrdersBtn = document.getElementById('clearOrdersBtn');
+const clearCartBtn = document.getElementById('clearCartBtn');
+const customerNameInput = document.getElementById('customerName');
+const customerPhoneInput = document.getElementById('customerPhone');
+const customerAddressInput = document.getElementById('customerAddress');
+const telegramTokenInput = document.getElementById('telegramToken');
+const telegramChatIdInput = document.getElementById('telegramChatId');
+const successOrderNumber = document.getElementById('successOrderNumber');
+const successOrderTotal = document.getElementById('successOrderTotal');
 
-// ===== DOM ELEMENTLAR =====
-const loader = document.querySelector('.loader');
-const navMenu = document.querySelector('.nav-menu');
-const menuBtn = document.querySelector('#menuBtn');
-const cartBtn = document.querySelector('#cartBtn');
-const cartCount = document.querySelector('#cartCount');
-const cartSidebar = document.querySelector('.cart-sidebar');
-const closeCart = document.querySelector('#closeCart');
-const cartItems = document.querySelector('#cartItems');
-const cartTotal = document.querySelector('#cartTotal');
-const checkoutBtn = document.querySelector('#checkoutBtn');
-const productsGrid = document.querySelector('#productsGrid');
-const filterBtns = document.querySelectorAll('.filter-btn');
-const orderModal = document.querySelector('#orderModal');
-const closeOrderModal = document.querySelector('#closeOrderModal');
-const orderForm = document.querySelector('#orderForm');
-const successModal = document.querySelector('#successModal');
-const continueShoppingBtn = document.querySelector('#continueShoppingBtn');
-const orderSummary = document.querySelector('#orderSummary');
-const cancelModal = document.querySelector('#cancelModal');
-const closeCancelModal = document.querySelector('#closeCancelModal');
-const cancelForm = document.querySelector('#cancelForm');
-const telegramSettings = document.querySelector('#telegramSettings');
-const adminPanel = document.querySelector('#adminPanel');
-const adminBtn = document.querySelector('#adminBtn');
-const closeAdminPanel = document.querySelector('#closeAdminPanel');
-const overlay = document.querySelector('#overlay');
-const botTokenInput = document.querySelector('#botToken');
-const chatIdInput = document.querySelector('#chatId');
-const saveTelegramBtn = document.querySelector('#saveTelegramBtn');
-const testTelegramBtn = document.querySelector('#testTelegramBtn');
-const ordersList = document.querySelector('#ordersList');
-
-// ===== GLOBAL O'ZGARGUVCHILAR =====
+// ============ GLOBAL O'ZGARGUVCHILAR ============
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let products = [];
 let orders = JSON.parse(localStorage.getItem('orders')) || [];
 let orderCounter = parseInt(localStorage.getItem('orderCounter')) || 1000;
-let telegramConfig = JSON.parse(localStorage.getItem('telegramConfig')) || CONFIG;
+let telegramConfig = JSON.parse(localStorage.getItem('telegramConfig')) || {
+    token: '',
+    chatId: ''
+};
 
-// ===== YUKLASH ANIMATSIYASI =====
-window.addEventListener('load', () => {
+// ============ SAYT YUKLANGANDA ============
+document.addEventListener('DOMContentLoaded', function() {
+    // Loadingni yashirish
     setTimeout(() => {
-        loader.classList.add('hidden');
-        loadProducts();
-        updateCart();
-        loadTelegramConfig();
-        loadOrders();
+        loading.classList.add('hidden');
     }, 1000);
-});
 
-// ===== NAVIGATSIYA =====
-menuBtn.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-    overlay.classList.toggle('active');
-});
-
-// Navigation linklarini faollashtirish
-document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', (e) => {
-        // Active classni o'zgartirish
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        e.target.classList.add('active');
-        
-        // Mobile menyuni yopish
-        if (window.innerWidth <= 768) {
-            navMenu.classList.remove('active');
-            overlay.classList.remove('active');
-        }
-    });
-});
-
-// Scroll bo'yicha active linkni yangilash
-window.addEventListener('scroll', () => {
-    const sections = document.querySelectorAll('section');
-    const navLinks = document.querySelectorAll('.nav-link');
+    // Mahsulotlarni yuklash
+    loadProducts();
     
-    let current = '';
+    // Savatni yangilash
+    updateCart();
     
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop - 100;
-        const sectionHeight = section.clientHeight;
-        
-        if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-            current = section.getAttribute('id');
-        }
+    // Telegram sozlamalarini yuklash
+    loadTelegramConfig();
+    
+    // Event listenerlarni o'rnatish
+    setupEventListeners();
+    
+    // Scroll event
+    window.addEventListener('scroll', handleScroll);
+});
+
+// ============ EVENT LISTENERLARNI O'RNATISH ============
+function setupEventListeners() {
+    // Mobile menu
+    menuBtn.addEventListener('click', toggleMobileMenu);
+    
+    // Savat ochish/yopish
+    cartBtn.addEventListener('click', openCart);
+    closeCartBtn.addEventListener('click', closeCart);
+    
+    // Mahsulot filtrlash
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => filterProducts(btn));
     });
     
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('active');
-        }
+    // Buyurtma berish
+    checkoutBtn.addEventListener('click', openOrderModal);
+    closeOrderBtn.addEventListener('click', () => closeModal(orderModal));
+    
+    // Order form
+    orderForm.addEventListener('submit', handleOrderSubmit);
+    
+    // Success modal
+    continueBtn.addEventListener('click', () => closeModal(successModal));
+    
+    // Cancel order
+    closeCancelBtn.addEventListener('click', () => closeModal(cancelModal));
+    cancelForm.addEventListener('submit', handleCancelSubmit);
+    
+    // Overlay
+    overlay.addEventListener('click', closeAllModals);
+    
+    // Admin panel
+    adminBtn.addEventListener('click', openAdminPanel);
+    closeAdminBtn.addEventListener('click', () => closeModal(adminModal));
+    
+    // Telegram modal
+    closeTelegramBtn.addEventListener('click', () => closeModal(telegramModal));
+    
+    // Scroll to top
+    scrollTopBtn.addEventListener('click', scrollToTop);
+    
+    // Telegram sozlamalari
+    if (saveTelegramBtn) {
+        saveTelegramBtn.addEventListener('click', saveTelegramSettings);
+    }
+    
+    if (testTelegramBtn) {
+        testTelegramBtn.addEventListener('click', testTelegram);
+    }
+    
+    // Admin actions
+    if (clearOrdersBtn) {
+        clearOrdersBtn.addEventListener('click', clearAllOrders);
+    }
+    
+    if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', clearAllCart);
+    }
+    
+    // Navigation links
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', handleNavClick);
     });
-});
+    
+    // Admin tabs
+    document.querySelectorAll('.tab-btn').forEach(tab => {
+        tab.addEventListener('click', () => switchTab(tab));
+    });
+}
 
-// ===== MAHSULOTLARNI YUKLASH =====
+// ============ MAHSULOTLARNI YUKLASH VA KO'RSATISH ============
 function loadProducts() {
-    // Demo mahsulotlar
     products = [
         {
             id: 1,
@@ -111,7 +151,7 @@ function loadProducts() {
             category: 'men',
             price: 120000,
             originalPrice: 150000,
-            image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+            image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
             badge: 'Yangi',
             rating: 4.5
         },
@@ -121,7 +161,7 @@ function loadProducts() {
             category: 'women',
             price: 180000,
             originalPrice: 220000,
-            image: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+            image: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
             badge: 'Chegirma',
             rating: 4.8
         },
@@ -131,7 +171,7 @@ function loadProducts() {
             category: 'kids',
             price: 65000,
             originalPrice: 80000,
-            image: 'https://images.unsplash.com/photo-1519241047957-be31d7379a5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+            image: 'https://images.unsplash.com/photo-1519241047957-be31d7379a5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
             badge: null,
             rating: 4.2
         },
@@ -141,7 +181,7 @@ function loadProducts() {
             category: 'men',
             price: 200000,
             originalPrice: 250000,
-            image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+            image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
             badge: null,
             rating: 4.7
         },
@@ -151,7 +191,7 @@ function loadProducts() {
             category: 'women',
             price: 160000,
             originalPrice: 200000,
-            image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+            image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
             badge: 'Yangi',
             rating: 4.4
         },
@@ -161,44 +201,21 @@ function loadProducts() {
             category: 'kids',
             price: 90000,
             originalPrice: 110000,
-            image: 'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+            image: 'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
             badge: null,
             rating: 4.6
-        },
-        {
-            id: 7,
-            name: 'Erkaklar kostyum',
-            category: 'men',
-            price: 450000,
-            originalPrice: 550000,
-            image: 'https://images.unsplash.com/photo-1594938374182-6e5d3f8e65ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-            badge: 'Premium',
-            rating: 4.9
-        },
-        {
-            id: 8,
-            name: 'Ayollar palto',
-            category: 'women',
-            price: 350000,
-            originalPrice: 420000,
-            image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-            badge: 'Chegirma',
-            rating: 4.7
         }
     ];
     
     renderProducts();
 }
 
-// ===== MAHSULOTLARNI CHIZISH =====
 function renderProducts(filter = 'all') {
     productsGrid.innerHTML = '';
     
     const filteredProducts = filter === 'all' 
         ? products 
-        : products.filter(product => filter === 'sale' 
-            ? product.badge === 'Chegirma' 
-            : product.category === filter);
+        : products.filter(product => product.category === filter);
     
     filteredProducts.forEach(product => {
         const productCard = document.createElement('div');
@@ -224,55 +241,51 @@ function renderProducts(filter = 'all') {
                 </div>
             </div>
         `;
-        productsGrid.appendChild(productCard);
-    });
-    
-    // Savatga qo'shish event listenerlar
-    document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const productId = parseInt(e.target.dataset.id);
-            const product = products.find(p => p.id === productId);
-            addToCart(product);
-        });
-    });
-    
-    // Wishlist event listenerlar
-    document.querySelectorAll('.wishlist-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        
+        // Savatga qo'shish
+        const addBtn = productCard.querySelector('.add-to-cart');
+        addBtn.addEventListener('click', () => addToCart(product));
+        
+        // Sevimlilarga qo'shish
+        const wishBtn = productCard.querySelector('.wishlist-btn');
+        wishBtn.addEventListener('click', (e) => {
             const icon = e.currentTarget.querySelector('i');
             icon.classList.toggle('far');
             icon.classList.toggle('fas');
-            icon.classList.toggle('text-red-500');
-            
             showNotification(
                 icon.classList.contains('fas') 
                     ? 'Sevimlilarga qo\'shildi' 
-                    : 'Sevimlilardan o\'chirildi'
+                    : 'Sevimlilardan olindi'
             );
         });
+        
+        productsGrid.appendChild(productCard);
     });
 }
 
-// ===== FILTRLASH =====
-filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        const filter = btn.dataset.filter;
-        renderProducts(filter);
-    });
-});
+function filterProducts(button) {
+    // Active classni o'zgartirish
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    
+    // Filter qilish
+    const filter = button.getAttribute('data-filter');
+    renderProducts(filter);
+}
 
-// ===== SAVAT FUNKSIYALARI =====
+// ============ SAVAT FUNKSIYALARI ============
 function addToCart(product) {
+    // Mahsulot savatda bormi?
     const existingItem = cart.find(item => item.id === product.id);
     
     if (existingItem) {
         existingItem.quantity += 1;
     } else {
         cart.push({
-            ...product,
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
             quantity: 1
         });
     }
@@ -284,7 +297,7 @@ function addToCart(product) {
 function removeFromCart(productId) {
     cart = cart.filter(item => item.id !== productId);
     updateCart();
-    showNotification('Mahsulot savatdan o\'chirildi');
+    showNotification('Mahsulot savatdan olindi');
 }
 
 function updateQuantity(productId, newQuantity) {
@@ -303,27 +316,27 @@ function updateCart() {
     // LocalStorage ga saqlash
     localStorage.setItem('cart', JSON.stringify(cart));
     
-    // Cart count yangilash
+    // Cart badge yangilash
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartCount.textContent = totalItems;
+    cartBadge.textContent = totalItems;
     
     // Cart items ni chizish
     renderCartItems();
     
-    // Total summani hisoblash
+    // Total summa
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    cartTotal.textContent = formatPrice(total);
+    cartTotalPrice.textContent = formatPrice(total);
 }
 
 function renderCartItems() {
-    cartItems.innerHTML = '';
+    cartBody.innerHTML = '';
     
     if (cart.length === 0) {
-        cartItems.innerHTML = `
+        cartBody.innerHTML = `
             <div class="cart-empty">
                 <i class="fas fa-shopping-cart"></i>
                 <p>Savatda mahsulot yo'q</p>
-                <a href="#products" class="btn btn-outline">Xarid qilishni boshlash</a>
+                <a href="#products" class="btn secondary-btn">Xarid qilish</a>
             </div>
         `;
         return;
@@ -347,142 +360,137 @@ function renderCartItems() {
                 </div>
             </div>
         `;
-        cartItems.appendChild(cartItem);
-    });
-    
-    // Quantity buttons eventlar
-    document.querySelectorAll('.quantity-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const productId = parseInt(e.target.dataset.id);
-            const item = cart.find(item => item.id === productId);
-            
-            if (e.target.classList.contains('minus')) {
-                updateQuantity(productId, item.quantity - 1);
-            } else if (e.target.classList.contains('plus')) {
-                updateQuantity(productId, item.quantity + 1);
+        
+        // Quantity buttons
+        const minusBtn = cartItem.querySelector('.minus');
+        const plusBtn = cartItem.querySelector('.plus');
+        const removeBtn = cartItem.querySelector('.remove-item');
+        
+        minusBtn.addEventListener('click', () => {
+            const item = cart.find(i => i.id === parseInt(minusBtn.dataset.id));
+            if (item) {
+                updateQuantity(item.id, item.quantity - 1);
             }
         });
-    });
-    
-    // Remove buttons eventlar
-    document.querySelectorAll('.remove-item').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const productId = parseInt(e.target.closest('button').dataset.id);
-            removeFromCart(productId);
+        
+        plusBtn.addEventListener('click', () => {
+            const item = cart.find(i => i.id === parseInt(plusBtn.dataset.id));
+            if (item) {
+                updateQuantity(item.id, item.quantity + 1);
+            }
         });
+        
+        removeBtn.addEventListener('click', () => {
+            removeFromCart(parseInt(removeBtn.dataset.id));
+        });
+        
+        cartBody.appendChild(cartItem);
     });
 }
 
-// ===== SAVAT SIDEBAR =====
-cartBtn.addEventListener('click', () => {
+function openCart() {
     cartSidebar.classList.add('active');
     overlay.classList.add('active');
-});
-
-closeCart.addEventListener('click', () => {
-    cartSidebar.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-overlay.addEventListener('click', () => {
-    cartSidebar.classList.remove('active');
-    navMenu.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-// ===== BUYURTMA BERISH =====
-checkoutBtn.addEventListener('click', () => {
-    if (cart.length === 0) {
-        showNotification('Savat bo\'sh. Avval mahsulot qo\'shing.', 'warning');
-        return;
-    }
-    
-    cartSidebar.classList.remove('active');
-    orderModal.classList.add('active');
-    overlay.classList.add('active');
-    renderOrderSummary();
-});
-
-closeOrderModal.addEventListener('click', () => {
-    orderModal.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-// Order summary chizish
-function renderOrderSummary() {
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const itemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-    
-    orderSummary.innerHTML = `
-        <div class="order-items">
-            ${cart.map(item => `
-                <div class="order-item-summary">
-                    <span>${item.name} × ${item.quantity}</span>
-                    <span>${formatPrice(item.price * item.quantity)}</span>
-                </div>
-            `).join('')}
-        </div>
-        <div class="order-total-summary">
-            <span>Jami (${itemsCount} ta mahsulot):</span>
-            <span class="total-amount">${formatPrice(total)}</span>
-        </div>
-    `;
 }
 
-// Order form submit
-orderForm.addEventListener('submit', async (e) => {
+function closeCart() {
+    cartSidebar.classList.remove('active');
+    overlay.classList.remove('active');
+}
+
+// ============ BUYURTMA BERISH ============
+function openOrderModal() {
+    if (cart.length === 0) {
+        showNotification('Savat bo\'sh', 'warning');
+        return;
+    }
+    
+    closeCart();
+    orderModal.classList.add('active');
+    overlay.classList.add('active');
+    
+    // Formani tozalash
+    orderForm.reset();
+}
+
+async function handleOrderSubmit(e) {
     e.preventDefault();
     
-    const formData = new FormData(orderForm);
-    const orderData = {
-        name: formData.get('name'),
-        phone: formData.get('phone'),
-        address: formData.get('address'),
-        note: formData.get('note')
-    };
+    // Ma'lumotlarni olish
+    const name = customerNameInput.value.trim();
+    const phone = customerPhoneInput.value.trim();
+    const address = customerAddressInput.value.trim();
+    const note = document.getElementById('customerNote')?.value.trim() || '';
     
     // Validatsiya
-    if (!orderData.name || !orderData.phone || !orderData.address) {
+    if (!name || !phone || !address) {
         showNotification('Iltimos, barcha maydonlarni to\'ldiring', 'warning');
+        
+        // Bo'sh maydonlarni belgilash
+        if (!name) customerNameInput.style.borderColor = '#ff4757';
+        if (!phone) customerPhoneInput.style.borderColor = '#ff4757';
+        if (!address) customerAddressInput.style.borderColor = '#ff4757';
+        
+        // 3 soniyadan keyin belgilashni olib tashlash
+        setTimeout(() => {
+            customerNameInput.style.borderColor = '';
+            customerPhoneInput.style.borderColor = '';
+            customerAddressInput.style.borderColor = '';
+        }, 3000);
+        
         return;
     }
     
-    if (orderData.phone.length < 9) {
+    // Telefon raqamini tekshirish
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone.length < 9) {
         showNotification('Telefon raqami noto\'g\'ri', 'warning');
+        customerPhoneInput.style.borderColor = '#ff4757';
+        setTimeout(() => {
+            customerPhoneInput.style.borderColor = '';
+        }, 3000);
         return;
     }
     
-    // Buyurtma yaratish
-    const order = createOrder(orderData);
+    // Loading ko'rsatish
+    const submitBtn = orderForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ishlanmoqda...';
+    submitBtn.disabled = true;
     
-    // Modalni yopish
-    orderModal.classList.remove('active');
-    
-    // Success modalni ochish
-    successModal.classList.add('active');
-    
-    // Buyurtma ma'lumotlarini ko'rsatish
-    document.querySelector('#orderNumber').textContent = order.id;
-    document.querySelector('#orderTotal').textContent = formatPrice(order.total);
-    
-    // Telegramga yuborish
-    const sent = await sendToTelegram(order);
-    
-    if (sent) {
-        showNotification('Buyurtma Telegramga yuborildi!', 'success');
-    } else {
-        showNotification('Telegramga yuborishda xatolik. Ma\'lumotlar saqlangan.', 'warning');
+    try {
+        // Buyurtma yaratish
+        const order = createOrder(name, phone, address, note);
+        
+        // Modalni yopish
+        closeModal(orderModal);
+        
+        // Success modalni ochish
+        showSuccessModal(order);
+        
+        // Formani tozalash
+        orderForm.reset();
+        
+        // Telegramga yuborish
+        await sendOrderToTelegram(order);
+        
+        // Savatni tozalash
+        cart = [];
+        updateCart();
+        
+    } catch (error) {
+        console.error('Xatolik:', error);
+        showNotification('Xatolik yuz berdi', 'error');
+    } finally {
+        // Buttonni tiklash
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
     }
-    
-    // Savatni tozalash
-    cart = [];
-    updateCart();
-});
+}
 
-// ===== BUYURTMA YARATISH =====
-function createOrder(customerData) {
+function createOrder(name, phone, address, note) {
     orderCounter++;
-    localStorage.setItem('orderCounter', orderCounter);
+    localStorage.setItem('orderCounter', orderCounter.toString());
     
     const order = {
         id: `ORD-${orderCounter}`,
@@ -490,51 +498,70 @@ function createOrder(customerData) {
         items: [...cart],
         total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
         status: 'yetkazilmoqda',
-        customer: customerData,
+        customer: { name, phone, address, note },
         telegramSent: false
     };
     
-    // Orders arrayga qo'shish
+    // Buyurtmalar ro'yxatiga qo'shish
     orders.unshift(order);
     localStorage.setItem('orders', JSON.stringify(orders));
-    
-    // Admin panelni yangilash
-    updateOrdersList();
     
     return order;
 }
 
-// ===== TELEGRAM INTEGRATSIYA =====
-function loadTelegramConfig() {
-    telegramConfig = JSON.parse(localStorage.getItem('telegramConfig')) || CONFIG;
+function showSuccessModal(order) {
+    // Ma'lumotlarni to'ldirish
+    successOrderNumber.textContent = order.id;
+    successOrderTotal.textContent = formatPrice(order.total);
     
-    if (botTokenInput && chatIdInput) {
-        botTokenInput.value = telegramConfig.TELEGRAM_BOT_TOKEN || '';
-        chatIdInput.value = telegramConfig.TELEGRAM_CHAT_ID || '';
+    // Modalni ochish
+    successModal.classList.add('active');
+    overlay.classList.add('active');
+}
+
+// ============ TELEGRAM FUNKSIYALARI ============
+function loadTelegramConfig() {
+    if (telegramTokenInput && telegramChatIdInput) {
+        telegramTokenInput.value = telegramConfig.token || '8055090268:AAHtu9cy9lnZw_GFZqo8mc860Bj9G3H7vOU';
+        telegramChatIdInput.value = telegramConfig.chatId || '8136720315';
     }
 }
 
-async function sendToTelegram(order) {
-    // Telegram konfiguratsiyasini tekshirish
-    if (!telegramConfig.TELEGRAM_BOT_TOKEN || !telegramConfig.TELEGRAM_CHAT_ID) {
-        console.warn('Telegram bot sozlanmagan');
-        return false;
+function saveTelegramSettings() {
+    const token = telegramTokenInput.value.trim();
+    const chatId = telegramChatIdInput.value.trim();
+    
+    if (!token || !chatId) {
+        showNotification('Iltimos, ikkala maydonni ham to\'ldiring', 'warning');
+        return;
+    }
+    
+    telegramConfig = { token, chatId };
+    localStorage.setItem('telegramConfig', JSON.stringify(telegramConfig));
+    
+    showNotification('Telegram sozlamalari saqlandi', 'success');
+    closeModal(telegramModal);
+}
+
+async function testTelegram() {
+    const token = telegramTokenInput.value.trim();
+    const chatId = telegramChatIdInput.value.trim();
+    
+    if (!token || !chatId) {
+        showNotification('Avval token va Chat ID ni kiriting', 'warning');
+        return;
     }
     
     try {
-        // Xabar matnini tayyorlash
-        const message = formatOrderMessage(order);
+        const message = `✅ <b>Test xabar!</b>\n\nModaDo'kon boti to'g\'ri ishlayapti.\nVaqt: ${new Date().toLocaleString('uz-UZ')}`;
         
-        // Telegram API ga so'rov
-        const url = `${telegramConfig.API_URL}${telegramConfig.TELEGRAM_BOT_TOKEN}/sendMessage`;
-        
-        const response = await fetch(url, {
+        const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                chat_id: telegramConfig.TELEGRAM_CHAT_ID,
+                chat_id: chatId,
                 text: message,
                 parse_mode: 'HTML'
             })
@@ -543,31 +570,61 @@ async function sendToTelegram(order) {
         const data = await response.json();
         
         if (data.ok) {
-            // Order statusni yangilash
-            order.telegramSent = true;
-            updateOrderInStorage(order);
-            
-            // Console ga log
-            console.log('✅ Telegram xabar yuborildi:', order.id);
-            console.log('📱 Chat ID:', telegramConfig.TELEGRAM_CHAT_ID);
+            showNotification('Test xabar yuborildi! Telegramni tekshiring.', 'success');
+        } else {
+            showNotification('Xatolik: Token yoki Chat ID noto\'g\'ri', 'error');
+        }
+    } catch (error) {
+        showNotification('Ulanish xatosi', 'error');
+    }
+}
+
+async function sendOrderToTelegram(order) {
+    if (!telegramConfig.token || !telegramConfig.chatId) {
+        console.log('Telegram bot sozlanmagan');
+        return false;
+    }
+    
+    try {
+        const message = formatTelegramMessage(order);
+        
+        const response = await fetch(`https://api.telegram.org/bot${telegramConfig.token}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chat_id: telegramConfig.chatId,
+                text: message,
+                parse_mode: 'HTML'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.ok) {
+            // Buyurtma holatini yangilash
+            const orderIndex = orders.findIndex(o => o.id === order.id);
+            if (orderIndex !== -1) {
+                orders[orderIndex].telegramSent = true;
+                localStorage.setItem('orders', JSON.stringify(orders));
+            }
             
             return true;
         } else {
-            console.error('❌ Telegram xatosi:', data);
+            console.error('Telegram xatosi:', data);
             return false;
         }
     } catch (error) {
-        console.error('❌ Telegram ulanish xatosi:', error);
+        console.error('Ulanish xatosi:', error);
         return false;
     }
 }
 
-function formatOrderMessage(order) {
-    const itemsList = order.items.map(item => 
-        `├ ${item.name}\n│   ${item.quantity} × ${formatPrice(item.price)} = ${formatPrice(item.price * item.quantity)}`
+function formatTelegramMessage(order) {
+    const itemsText = order.items.map(item => 
+        `├ ${item.name}\n│   ${item.quantity} ta × ${formatPrice(item.price)} = ${formatPrice(item.price * item.quantity)}`
     ).join('\n');
-    
-    const total = formatPrice(order.total);
     
     return `🛒 <b>YANGI BUYURTMA!</b>
 
@@ -577,103 +634,25 @@ function formatOrderMessage(order) {
 📞 <b>Telefon:</b> ${order.customer.phone}
 📍 <b>Manzil:</b> ${order.customer.address}
 ${order.customer.note ? `💬 <b>Izoh:</b> ${order.customer.note}\n` : ''}
-📋 <b>Mahsulotlar:</b>
-${itemsList}
 
-💰 <b>Jami summa:</b> ${total}
+📋 <b>Mahsulotlar:</b>
+${itemsText}
+
+💰 <b>Jami summa:</b> ${formatPrice(order.total)}
 🚚 <b>Holati:</b> ${order.status}
 
 ⏰ <b>Vaqt:</b> ${new Date().toLocaleTimeString('uz-UZ')}`;
 }
 
-// ===== TELEGRAM SOZLAMALARI =====
-saveTelegramBtn.addEventListener('click', () => {
-    const token = botTokenInput.value.trim();
-    const chatId = chatIdInput.value.trim();
-    
-    if (!token || !chatId) {
-        showNotification('Iltimos, barcha maydonlarni to\'ldiring', 'warning');
-        return;
-    }
-    
-    telegramConfig.TELEGRAM_BOT_TOKEN = token;
-    telegramConfig.TELEGRAM_CHAT_ID = chatId;
-    
-    localStorage.setItem('telegramConfig', JSON.stringify(telegramConfig));
-    
-    showNotification('Telegram sozlamalari saqlandi!', 'success');
-});
-
-testTelegramBtn.addEventListener('click', async () => {
-    if (!telegramConfig.TELEGRAM_BOT_TOKEN || !telegramConfig.TELEGRAM_CHAT_ID) {
-        showNotification('Avval bot token va chat ID ni kiriting', 'warning');
-        return;
-    }
-    
-    const testMessage = `✅ <b>Test xabar!</b>\n\nBot to'g\'ri ishlayapti.\nVaqt: ${new Date().toLocaleString('uz-UZ')}`;
-    
-    try {
-        const url = `${telegramConfig.API_URL}${telegramConfig.TELEGRAM_BOT_TOKEN}/sendMessage`;
-        
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                chat_id: telegramConfig.TELEGRAM_CHAT_ID,
-                text: testMessage,
-                parse_mode: 'HTML'
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (data.ok) {
-            showNotification('✅ Test xabar yuborildi! Telegramni tekshiring.', 'success');
-        } else {
-            showNotification('❌ Xatolik: Token yoki Chat ID noto\'g\'ri', 'error');
-        }
-    } catch (error) {
-        showNotification('❌ Ulanish xatosi: Internetni tekshiring', 'error');
-    }
-});
-
-// ===== SUCCESS MODAL =====
-continueShoppingBtn.addEventListener('click', () => {
-    successModal.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-document.querySelector('#trackOrderBtn').addEventListener('click', () => {
-    successModal.classList.remove('active');
-    overlay.classList.remove('active');
-    
-    showNotification('Buyurtma kuzatish funksiyasi tez orada ishga tushadi', 'info');
-});
-
-// ===== BUYURTMA BEKOR QILISH =====
-document.querySelector('#orderCancel').addEventListener('click', () => {
-    cancelModal.classList.add('active');
-    overlay.classList.add('active');
-});
-
-closeCancelModal.addEventListener('click', () => {
-    cancelModal.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-cancelForm.addEventListener('submit', async (e) => {
+// ============ BUYURTMA BEKOR QILISH ============
+function handleCancelSubmit(e) {
     e.preventDefault();
     
-    const formData = new FormData(cancelForm);
-    const orderNumber = formData.get('order_number');
-    const reason = formData.get('reason');
-    const phone = formData.get('phone');
-    const details = formData.get('details');
+    const orderNumber = document.getElementById('cancelOrderNumber').value.trim();
+    const phone = document.getElementById('cancelPhone').value.trim();
+    const reason = document.getElementById('cancelReason').value;
     
-    // Validatsiya
-    if (!orderNumber || !reason || !phone) {
+    if (!orderNumber || !phone || !reason) {
         showNotification('Iltimos, barcha maydonlarni to\'ldiring', 'warning');
         return;
     }
@@ -686,64 +665,84 @@ cancelForm.addEventListener('submit', async (e) => {
         return;
     }
     
-    const order = orders[orderIndex];
-    
-    // Cancel ma'lumotlarini saqlash
-    order.cancelled = {
+    // Statusni o'zgartirish
+    orders[orderIndex].status = 'bekor qilindi';
+    orders[orderIndex].cancelled = {
         date: new Date().toLocaleString('uz-UZ'),
         reason: reason,
-        details: details,
         phone: phone
     };
-    order.status = 'bekor qilindi';
     
-    // LocalStorage ni yangilash
     localStorage.setItem('orders', JSON.stringify(orders));
     
-    // Telegramga cancel xabarini yuborish
-    const cancelMessage = `❌ <b>BUYURTMA BEKOR QILINDI!</b>\n\n📦 <b>Buyurtma:</b> ${order.id}\n📅 <b>Bekor qilingan vaqt:</b> ${order.cancelled.date}\n📞 <b>Telefon:</b> ${phone}\n📝 <b>Sabab:</b> ${getReasonText(reason)}\n${details ? `💬 <b>Izoh:</b> ${details}\n` : ''}\n👤 <b>Mijoz:</b> ${order.customer.name}\n💰 <b>Summa:</b> ${formatPrice(order.total)}`;
-    
-    await sendToTelegram(cancelMessage);
-    
     // Modalni yopish
-    cancelModal.classList.remove('active');
-    overlay.classList.remove('active');
+    closeModal(cancelModal);
     
     // Formani tozalash
     cancelForm.reset();
     
     // Xabar berish
-    showNotification('Buyurtma bekor qilindi! Telegramga xabar yuborildi.', 'success');
+    showNotification('Buyurtma bekor qilindi', 'success');
     
-    // Admin panelni yangilash
-    updateOrdersList();
-});
+    // Telegramga xabar yuborish
+    sendCancelToTelegram(orders[orderIndex]);
+}
+
+async function sendCancelToTelegram(order) {
+    if (!telegramConfig.token || !telegramConfig.chatId) return;
+    
+    const message = `❌ <b>BUYURTMA BEKOR QILINDI!</b>\n\n📦 <b>Buyurtma:</b> ${order.id}\n📅 <b>Sana:</b> ${order.cancelled.date}\n📞 <b>Telefon:</b> ${order.cancelled.phone}\n📝 <b>Sabab:</b> ${getReasonText(order.cancelled.reason)}`;
+    
+    try {
+        await fetch(`https://api.telegram.org/bot${telegramConfig.token}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chat_id: telegramConfig.chatId,
+                text: message,
+                parse_mode: 'HTML'
+            })
+        });
+    } catch (error) {
+        console.error('Cancel notification error:', error);
+    }
+}
 
 function getReasonText(reason) {
     const reasons = {
         'change_mind': 'Fikrimni o\'zgartirdim',
         'delivery_time': 'Yetkazib berish vaqti uzoq',
-        'found_cheaper': 'Arzonroq topdim',
         'other': 'Boshqa sabab'
     };
     return reasons[reason] || reason;
 }
 
-// ===== ADMIN PANEL =====
-adminBtn.addEventListener('click', () => {
-    adminPanel.classList.add('active');
+// ============ ADMIN PANEL ============
+function openAdminPanel() {
+    adminModal.classList.add('active');
     overlay.classList.add('active');
     updateOrdersList();
-});
+}
 
-closeAdminPanel.addEventListener('click', () => {
-    adminPanel.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-function loadOrders() {
-    orders = JSON.parse(localStorage.getItem('orders')) || [];
-    updateOrdersList();
+function switchTab(button) {
+    // Active classni o'zgartirish
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    button.classList.add('active');
+    
+    // Tab contentlarni ko'rsatish/yashirish
+    const tabName = button.getAttribute('data-tab');
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    
+    const activeTab = document.getElementById(`${tabName}Tab`);
+    if (activeTab) {
+        activeTab.style.display = 'block';
+    }
 }
 
 function updateOrdersList() {
@@ -752,12 +751,7 @@ function updateOrdersList() {
     ordersList.innerHTML = '';
     
     if (orders.length === 0) {
-        ordersList.innerHTML = `
-            <div class="text-center py-8">
-                <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
-                <p class="text-gray-500">Hozircha buyurtmalar yo'q</p>
-            </div>
-        `;
+        ordersList.innerHTML = '<p class="text-center">Hozircha buyurtmalar yo\'q</p>';
         return;
     }
     
@@ -787,51 +781,68 @@ function updateOrdersList() {
     });
 }
 
-function updateOrderInStorage(updatedOrder) {
-    const index = orders.findIndex(order => order.id === updatedOrder.id);
-    if (index !== -1) {
-        orders[index] = updatedOrder;
-        localStorage.setItem('orders', JSON.stringify(orders));
+function clearAllOrders() {
+    if (confirm('Barcha buyurtmalarni o\'chirishni tasdiqlaysizmi?')) {
+        orders = [];
+        localStorage.removeItem('orders');
+        localStorage.removeItem('orderCounter');
+        orderCounter = 1000;
         updateOrdersList();
+        showNotification('Barcha buyurtmalar o\'chirildi', 'success');
     }
 }
 
-// ===== YORDAMCHI FUNKSIYALAR =====
+function clearAllCart() {
+    if (confirm('Savatni tozalashni tasdiqlaysizmi?')) {
+        cart = [];
+        updateCart();
+        showNotification('Savat tozalandi', 'success');
+    }
+}
+
+// ============ YORDAMCHI FUNKSIYALAR ============
 function formatPrice(price) {
     return new Intl.NumberFormat('uz-UZ').format(price) + ' so\'m';
 }
 
 function showNotification(message, type = 'success') {
-    // Notification elementini yaratish
+    // Notification yaratish
     const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
+    notification.className = 'notification';
     
-    // Icon tanlash
+    // Icon va rang
     let icon = 'fa-check-circle';
-    if (type === 'warning') icon = 'fa-exclamation-triangle';
-    if (type === 'error') icon = 'fa-times-circle';
-    if (type === 'info') icon = 'fa-info-circle';
+    let color = '#4CAF50';
+    
+    if (type === 'warning') {
+        icon = 'fa-exclamation-triangle';
+        color = '#FFA502';
+    } else if (type === 'error') {
+        icon = 'fa-times-circle';
+        color = '#FF4757';
+    } else if (type === 'info') {
+        icon = 'fa-info-circle';
+        color = '#2D3047';
+    }
     
     notification.innerHTML = `
         <i class="fas ${icon}"></i>
         <span>${message}</span>
     `;
     
-    // Style berish
+    // Style
     notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        background: ${type === 'success' ? '#4CAF50' : 
-                     type === 'warning' ? '#FFA502' : 
-                     type === 'error' ? '#FF4757' : '#2D3047'};
+        background: ${color};
         color: white;
         padding: 15px 20px;
         border-radius: 8px;
         display: flex;
         align-items: center;
         gap: 10px;
-        z-index: 10000;
+        z-index: 4000;
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         transform: translateX(150%);
         transition: transform 0.3s ease;
@@ -844,7 +855,7 @@ function showNotification(message, type = 'success') {
         notification.style.transform = 'translateX(0)';
     }, 10);
     
-    // 3 soniyadan keyin olib tashlash
+    // 3 soniyadan keyin yashirish
     setTimeout(() => {
         notification.style.transform = 'translateX(150%)';
         setTimeout(() => {
@@ -855,87 +866,158 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
-// ===== KEYBOARD SHORTCUTS =====
-document.addEventListener('keydown', (e) => {
-    // Escape - barcha modalarni yopish
-    if (e.key === 'Escape') {
-        cartSidebar.classList.remove('active');
-        orderModal.classList.remove('active');
-        successModal.classList.remove('active');
-        cancelModal.classList.remove('active');
-        telegramSettings.classList.remove('active');
-        adminPanel.classList.remove('active');
-        overlay.classList.remove('active');
-        navMenu.classList.remove('active');
+function closeModal(modal) {
+    if (modal) {
+        modal.classList.remove('active');
     }
+    overlay.classList.remove('active');
+}
+
+function closeAllModals() {
+    // Barcha modal va sidebar larni yopish
+    const modals = [
+        cartSidebar,
+        orderModal,
+        successModal,
+        cancelModal,
+        telegramModal,
+        adminModal
+    ];
     
-    // Ctrl+Shift+A - Admin panel
-    if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-        e.preventDefault();
-        adminPanel.classList.toggle('active');
-        overlay.classList.toggle('active');
-        if (adminPanel.classList.contains('active')) {
-            updateOrdersList();
+    modals.forEach(modal => {
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    });
+    
+    // Mobile menuni yopish
+    navLinks.classList.remove('active');
+    
+    // Overlay ni yopish
+    overlay.classList.remove('active');
+}
+
+function toggleMobileMenu() {
+    navLinks.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
+
+function handleNavClick(e) {
+    e.preventDefault();
+    
+    const targetId = this.getAttribute('href');
+    const targetSection = document.querySelector(targetId);
+    
+    if (targetSection) {
+        // Active classni o'zgartirish
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        this.classList.add('active');
+        
+        // Scroll qilish
+        window.scrollTo({
+            top: targetSection.offsetTop - 80,
+            behavior: 'smooth'
+        });
+        
+        // Mobile menuni yopish
+        if (window.innerWidth <= 768) {
+            navLinks.classList.remove('active');
+            overlay.classList.remove('active');
         }
     }
-    
-    // Ctrl+Shift+T - Telegram settings
-    if (e.ctrlKey && e.shiftKey && e.key === 'T') {
-        e.preventDefault();
-        telegramSettings.classList.toggle('active');
-        overlay.classList.toggle('active');
-    }
-});
+}
 
-// ===== SERVICE WORKER (PWA uchun) =====
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(error => {
-            console.log('ServiceWorker registration failed:', error);
-        });
+function handleScroll() {
+    // Header background
+    const header = document.querySelector('.header');
+    if (window.scrollY > 50) {
+        header.style.background = 'rgba(255, 255, 255, 0.98)';
+        header.style.backdropFilter = 'blur(10px)';
+    } else {
+        header.style.background = '#fff';
+        header.style.backdropFilter = 'none';
+    }
+    
+    // Scroll to top button
+    if (window.scrollY > 300) {
+        scrollTopBtn.classList.add('active');
+    } else {
+        scrollTopBtn.classList.remove('active');
+    }
+    
+    // Active nav link
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    let current = '';
+    
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        const sectionHeight = section.clientHeight;
+        
+        if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+            current = section.getAttribute('id');
+        }
+    });
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
     });
 }
 
-// ===== OFFLINE DETECTION =====
-window.addEventListener('online', () => {
-    showNotification('Internet ulandi', 'success');
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============ KEYBOARD SHORTCUTS ============
+document.addEventListener('keydown', function(e) {
+    // ESC - barcha modal va sidebar larni yopish
+    if (e.key === 'Escape') {
+        closeAllModals();
+    }
+    
+    // Ctrl + Shift + A - Admin panel
+    if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        openAdminPanel();
+    }
+    
+    // Ctrl + Shift + T - Telegram sozlamalari
+    if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+        e.preventDefault();
+        telegramModal.classList.add('active');
+        overlay.classList.add('active');
+    }
 });
 
-window.addEventListener('offline', () => {
-    showNotification('Internet uzildi. Offline rejimda ishlayapsiz', 'warning');
-});
-
-// ===== EXPORT FUNCTIONS (debug uchun) =====
+// ============ DEBUG FUNKSIYALARI ============
+// Konsolda test qilish uchun
 window.debug = {
-    clearCart: () => {
-        cart = [];
-        updateCart();
-        showNotification('Savat tozalandi', 'info');
-    },
-    clearOrders: () => {
-        orders = [];
-        localStorage.removeItem('orders');
-        updateOrdersList();
-        showNotification('Buyurtmalar tozalandi', 'info');
-    },
-    testOrder: () => {
-        cart.push({
-            id: 999,
+    getCart: () => cart,
+    getOrders: () => orders,
+    getTelegramConfig: () => telegramConfig,
+    addTestProduct: () => {
+        const testProduct = {
+            id: Date.now(),
             name: 'Test mahsulot',
             price: 100000,
-            quantity: 1,
-            image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c'
-        });
-        updateCart();
-        showNotification('Test mahsulot qo\'shildi', 'info');
-    },
-    getStats: () => {
-        return {
-            cartItems: cart.length,
-            totalOrders: orders.length,
-            telegramConfigured: !!(telegramConfig.TELEGRAM_BOT_TOKEN && telegramConfig.TELEGRAM_CHAT_ID)
+            image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
         };
+        addToCart(testProduct);
+    },
+    clearAll: () => {
+        cart = [];
+        orders = [];
+        localStorage.clear();
+        updateCart();
+        updateOrdersList();
+        showNotification('Barcha ma\'lumotlar tozalandi', 'success');
     }
 };
 
-console.log('🔧 Debug funksiyalar mavjud: window.debug');
+console.log('🔧 Debug funksiyalari mavjud: window.debug');
