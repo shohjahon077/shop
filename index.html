@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModaDo'kon - Kiyimlar Do'koni</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading -->
+    <div class="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">
+                    <i class="fas fa-tshirt"></i>
+                    <span>ModaDo'kon</span>
+                </a>
+                
+                <div class="nav-menu">
+                    <a href="#home" class="nav-link active">Bosh</a>
+                    <a href="#products" class="nav-link">Mahsulotlar</a>
+                    <a href="#categories" class="nav-link">Kategoriya</a>
+                    <a href="#sale" class="nav-link">Aksiya</a>
+                    <a href="#about" class="nav-link">Biz haqimizda</a>
+                    <a href="#contact" class="nav-link">Bog'lanish</a>
+                </div>
+                
+                <div class="nav-actions">
+                    <button class="action-btn search-btn" id="searchBtn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    
+                    <button class="action-btn cart-btn" id="cartBtn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                    
+                    <button class="action-btn menu-btn" id="menuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Zamonaviy <span>Kiyimlar</span></h1>
+                <p class="hero-text">Eng yaxshi narxlar, sifatli materiallar, o'z uslubingizni yarating</p>
+                <div class="hero-buttons">
+                    <a href="#products" class="btn primary-btn">Xarid qilish</a>
+                    <a href="#sale" class="btn secondary-btn">Aksiyalar</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kategoriyalar -->
+    <section class="categories" id="categories">
+        <div class="container">
+            <h2 class="section-title">Kategoriyalar</h2>
+            
+            <div class="categories-grid">
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c" alt="Erkaklar">
+                    <div class="category-info">
+                        <h3>Erkaklar</h3>
+                        <a href="#" class="category-link">Ko'rish</a>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d" alt="Ayollar">
+                    <div class="category-info">
+                        <h3>Ayollar</h3>
+                        <a href="#" class="category-link">Ko'rish</a>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d" alt="Bolalar">
+                    <div class="category-info">
+                        <h3>Bolalar</h3>
+                        <a href="#" class="category-link">Ko'rish</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mahsulotlar -->
+    <section class="products" id="products">
+        <div class="container">
+            <h2 class="section-title">Mashhur Mahsulotlar</h2>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Barchasi</button>
+                <button class="filter-btn" data-filter="men">Erkaklar</button>
+                <button class="filter-btn" data-filter="women">Ayollar</button>
+                <button class="filter-btn" data-filter="sale">Chegirma</button>
+            </div>
+            
+            <div class="products-grid" id="productsGrid">
+                <!-- Mahsulotlar JavaScript bilan yuklanadi -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Aksiya -->
+    <section class="sale" id="sale">
+        <div class="container">
+            <div class="sale-content">
+                <h2 class="sale-title">50% chegirma</h2>
+                <p class="sale-text">Yangi kolleksiyada katta chegirma</p>
+                <a href="#products" class="btn primary-btn">Hoziroq sotib oling</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-content">
+                <h2 class="section-title">ModaDo'kon haqida</h2>
+                <p>Biz 10 yildan beri sifatli kiyimlar bilan xizmat qilamiz. Mijozlar mamnuniyati bizning asosiy maqsadimiz.</p>
+                <div class="stats">
+                    <div class="stat">
+                        <h3>10,000+</h3>
+                        <p>Mijozlar</p>
+                    </div>
+                    <div class="stat">
+                        <h3>500+</h3>
+                        <p>Mahsulotlar</p>
+                    </div>
+                    <div class="stat">
+                        <h3>24/7</h3>
+                        <p>Qo'llab-quvvatlash</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">Bog'lanish</h2>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h3>Telefon</h3>
+                            <p>+998 90 123 45 67</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h3>Manzil</h3>
+                            <p>Toshkent shahri</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h3>Ish vaqti</h3>
+                            <p>9:00 - 20:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h3>ModaDo'kon</h3>
+                    <p>Zamonaviy kiyimlar do'koni</p>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Havolalar</h3>
+                    <a href="#home">Bosh sahifa</a>
+                    <a href="#products">Mahsulotlar</a>
+                    <a href="#about">Biz haqimizda</a>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Ijtimoiy tarmoqlar</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 ModaDo'kon. Barcha huquqlar himoyalangan.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Savat -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Savat</h3>
+            <button class="close-cart" id="closeCart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="cart-items" id="cartItems">
+            <!-- Savatdagi mahsulotlar -->
+        </div>
+        
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Jami:</span>
+                <span id="cartTotal">0 so'm</span>
+            </div>
+            <button class="btn primary-btn" id="checkoutBtn">Buyurtma berish</button>
+        </div>
+    </div>
+
+    <!-- Buyurtma formasi -->
+    <div class="order-modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Buyurtma berish</h3>
+                <button class="close-modal" id="closeOrderModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="orderForm">
+                <div class="form-group">
+                    <label>Ism *</label>
+                    <input type="text" id="orderName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Telefon *</label>
+                    <input type="tel" id="orderPhone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Manzil *</label>
+                    <textarea id="orderAddress" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Izoh</label>
+                    <textarea id="orderNote"></textarea>
+                </div>
+                
+                <div class="order-summary">
+                    <h4>Buyurtma xulosasi</h4>
+                    <div id="orderSummary">
+                        <!-- Buyurtma ma'lumotlari -->
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn primary-btn">Buyurtmani tasdiqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Buyurtma tasdiqlandi -->
+    <div class="success-modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h3>Buyurtma qabul qilindi!</h3>
+            
+            <div class="order-info">
+                <p><strong>Buyurtma raqami:</strong> <span id="orderNumber">ORD-123456</span></p>
+                <p><strong>Jami summa:</strong> <span id="orderTotal">0 so'm</span></p>
+                <p><strong>Yetkazib berish:</strong> 2-3 ish kuni</p>
+            </div>
+            
+            <div class="delivery-status">
+                <i class="fas fa-truck"></i>
+                <p>Buyurtma yetkazilmoqda...</p>
+            </div>
+            
+            <div class="success-buttons">
+                <button class="btn primary-btn" id="trackOrderBtn">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Buyurtmani kuzatish
+                </button>
+                <button class="btn secondary-btn" id="continueShoppingBtn">
+                    Davom ettirish
+                </button>
+            </div>
+            
+            <div class="success-note">
+                <p><i class="fas fa-info-circle"></i> Operator tez orada siz bilan bog'lanadi</p>
+                <p><i class="fab fa-telegram"></i> Buyurtma ma'lumotlari Telegramga yuborildi</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buyurtmani bekor qilish -->
+    <div class="cancel-modal" id="cancelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Buyurtmani bekor qilish</h3>
+                <button class="close-modal" id="closeCancelModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="cancelForm">
+                <div class="form-group">
+                    <label>Buyurtma raqami *</label>
+                    <input type="text" id="cancelOrderNumber" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Telefon raqamingiz *</label>
+                    <input type="tel" id="cancelPhone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Sabab *</label>
+                    <select id="cancelReason" required>
+                        <option value="">Tanlang</option>
+                        <option value="change_mind">Fikrimni o'zgartirdim</option>
+                        <option value="delivery_time">Yetkazib berish vaqti</option>
+                        <option value="other">Boshqa</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Izoh</label>
+                    <textarea id="cancelNote"></textarea>
+                </div>
+                
+                <button type="submit" class="btn danger-btn">Bekor qilishni tasdiqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Telegram sozlamalari (Admin uchun) -->
+    <div class="telegram-settings" id="telegramSettings">
+        <div class="settings-content">
+            <h3><i class="fab fa-telegram"></i> Telegram Sozlamalari</h3>
+            
+            <div class="form-group">
+                <label>Bot Token</label>
+                <input type="text" id="botToken" placeholder="BotFather dan olgan tokeningiz">
+            </div>
+            
+            <div class="form-group">
+                <label>Chat ID</label>
+                <input type="text" id="chatId" placeholder="Sizning Chat ID">
+            </div>
+            
+            <div class="settings-buttons">
+                <button class="btn primary-btn" id="saveTelegramBtn">Saqlash</button>
+                <button class="btn secondary-btn" id="testTelegramBtn">Sinov xabar</button>
+            </div>
+            
+            <div class="telegram-help">
+                <p><strong>Qanday olish kerak?</strong></p>
+                <p>1. @BotFather ga boring</p>
+                <p>2. /newbot buyrug'ini yuboring</p>
+                <p>3. Bot nomini va username bering</p>
+                <p>4. Token oling va bu yerga qo'ying</p>
+                <p>5. @getidsbot dan Chat ID oling</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="panel-header">
+            <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
+            <button class="close-panel" id="closeAdminPanel">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="panel-body">
+            <div class="orders-list" id="ordersList">
+                <!-- Buyurtmalar ro'yxati -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin kirish -->
+    <button class="admin-btn" id="adminBtn">
+        <i class="fas fa-user-cog"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
